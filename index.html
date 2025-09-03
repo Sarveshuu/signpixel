@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Pixel Art Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d0d;
+            --orange: #ff9f00;
+            --dark-orange: #e68a00;
+            --light-orange: #ffc34d;
+        }
+
+        body {
+            background-color: var(--black);
+            color: var(--orange);
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        /* Title Animation */
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            color: var(--light-orange);
+            text-shadow: 0 0 10px var(--orange), 0 0 20px var(--orange);
+            animation: flicker 2s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow:
+                0 0 2px #fff,
+                0 0 2px #fff,
+                0 0 20px var(--orange),
+                0 0 40px var(--orange),
+                0 0 80px var(--orange);
+            }
+            20%, 24%, 55% {        
+                text-shadow: none;
+            }
+        }
+
+        /* File Upload Area */
+        .upload-area {
+            width: 100%;
+            max-width: 500px;
+            border: 4px dashed var(--dark-orange);
+            border-radius: 20px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--light-orange);
+            background-color: rgba(255, 159, 0, 0.1);
+            box-shadow: 0 0 20px rgba(255, 159, 0, 0.5);
+        }
+        .upload-area p {
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+
+        /* Image Canvas */
+        #imageCanvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 2px solid var(--dark-orange);
+            display: none; /* Initially hidden */
+        }
+        
+        /* Controls - Slider aur Buttons */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 200px;
+            height: 8px;
+            background: var(--dark-orange);
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--light-orange);
+            border-radius: 50%;
+            border: 2px solid var(--black);
+        }
+
+        /* Buttons Styling */
+        .btn {
+            background-color: var(--orange);
+            color: var(--black);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 5px 0 var(--dark-orange);
+            transition: all 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 15px rgba(255, 159, 0, 0.4);
+        }
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 0 var(--dark-orange);
+        }
+        .btn:disabled {
+            background-color: #555;
+            color: #999;
+            cursor: not-allowed;
+            box-shadow: 0 5px 0 #333;
+        }
+        
+        /* Blast Particle Effect */
+        .particle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 200;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Convert your Sign image into pixel Sign Art</h1>
+
+        <label for="imageUpload" class="upload-area" id="upload-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-cloud-arrow-up-fill inline-block" viewBox="0 0 16 16">
+                <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2zm2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2z"/>
+            </svg>
+            <p>Choose your file</p>
+        </label>
+        <input type="file" id="imageUpload" accept="image/*" class="hidden">
+
+        <canvas id="imageCanvas"></canvas>
+
+        <div class="controls">
+            <div id="pixel-slider-container" class="slider-container hidden">
+                <label for="pixelSize">Pixel Size:</label>
+                <input type="range" id="pixelSize" min="5" max="50" value="20">
+                <span id="pixelSizeValue">20</span>
+            </div>
+            <button id="pixelateBtn" class="btn" disabled>Pixelate!</button>
+            <a id="downloadBtn" class="btn hidden" download="pixel-art.png">Download</a>
+        </div>
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const uploadLabel = document.getElementById('upload-label');
+        const canvas = document.getElementById('imageCanvas');
+        const ctx = canvas.getContext('2d');
+        const pixelateBtn = document.getElementById('pixelateBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const pixelSliderContainer = document.getElementById('pixel-slider-container');
+        const pixelSizeSlider = document.getElementById('pixelSize');
+        const pixelSizeValue = document.getElementById('pixelSizeValue');
+
+        let originalImage = null;
+
+        // File upload event
+        imageUpload.addEventListener('change', handleImageUpload);
+        
+        // Drag and drop events
+        uploadLabel.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadLabel.classList.add('dragover');
+        });
+        uploadLabel.addEventListener('dragleave', () => {
+            uploadLabel.classList.remove('dragover');
+        });
+        uploadLabel.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadLabel.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                imageUpload.files = files;
+                handleImageUpload({ target: imageUpload });
+            }
+        });
+
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                originalImage = new Image();
+                originalImage.onload = () => {
+                    drawImageToCanvas(originalImage);
+                    canvas.style.display = 'block';
+                    pixelateBtn.disabled = false;
+                    downloadBtn.classList.add('hidden');
+                    pixelSliderContainer.classList.remove('hidden');
+                };
+                originalImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function drawImageToCanvas(img) {
+            const maxWidth = 800;
+            const scale = Math.min(maxWidth / img.width, 1);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
+
+        pixelSizeSlider.addEventListener('input', (e) => {
+            pixelSizeValue.textContent = e.target.value;
+            // Redraw original image and then pixelate with new value if image exists
+            if (originalImage) {
+                 drawImageToCanvas(originalImage);
+                 pixelate();
+            }
+        });
+
+        pixelateBtn.addEventListener('click', () => {
+            if (originalImage) {
+                pixelate();
+                downloadBtn.classList.remove('hidden');
+            }
+        });
+
+        function pixelate() {
+            if (!originalImage) return;
+
+            const size = parseInt(pixelSizeSlider.value) * 0.01;
+            const w = canvas.width * size;
+            const h = canvas.height * size;
+            
+            // Draw original image scaled down
+            ctx.drawImage(originalImage, 0, 0, w, h);
+            
+            // Turn off image smoothing to get sharp pixels
+            ctx.mozImageSmoothingEnabled = false;
+            ctx.webkitImageSmoothingEnabled = false;
+            ctx.imageSmoothingEnabled = false;
+            
+            // Draw scaled down image back to full size
+            ctx.drawImage(canvas, 0, 0, w, h, 0, 0, canvas.width, canvas.height);
+        }
+
+        downloadBtn.addEventListener('click', () => {
+            const dataURL = canvas.toDataURL('image/png');
+            downloadBtn.href = dataURL;
+        });
+
+        // --- Global Blast Effect on Click ---
+        window.addEventListener('click', (e) => {
+            createBlastEffect(e.clientX, e.clientY);
+        });
+
+        function createBlastEffect(x, y) {
+            const particleCount = 20;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                document.body.appendChild(particle);
+
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 80 + 20;
+                const size = Math.random() * 10 + 5;
+                
+                const colors = ['#FF9800', '#F57C00', '#FFC107', '#FFFFFF'];
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                particle.animate([
+                    { transform: `translate(-50%, -50%) scale(1)`, opacity: 1 },
+                    { transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'ease-out'
+                });
+
+                setTimeout(() => {
+                    particle.remove();
+                }, 800);
+            }
+        }
+    </script>
+</body>
+</html>
